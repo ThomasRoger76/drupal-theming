@@ -1,0 +1,79 @@
+---
+name: drupal-theming
+description: Use when creating or customizing Drupal themes, writing Twig templates, implementing preprocess hooks in .theme files, declaring CSS/JS libraries (.libraries.yml), configuring responsive images with breakpoints.yml, debugging template suggestions via Twig debug, or overriding base themes in Drupal 8-11+
+---
+
+# Drupal Theming — Architecture & Référence Complète
+
+## Overview
+
+Référentiel complet du theming Drupal 8-11+ : anatomie d'un thème, gestion des assets, moteur Twig, suggestions de templates, preprocess PHP, images responsives. Absorbe `drupal-frontend`.
+
+## Quick Decision Table
+
+| Besoin | Outil | Référence |
+|--------|-------|-----------|
+| Créer un thème from scratch | Structure + `.info.yml` | [theme-anatomy.md](theme-anatomy.md) |
+| Définir des régions | `regions:` dans `.info.yml` | [theme-anatomy.md](theme-anatomy.md) |
+| Choisir / hériter d'un base theme | `base theme:` — stable9 / olivero / false | [theme-anatomy.md](theme-anatomy.md) |
+| Charger CSS/JS sur toutes les pages | `libraries:` dans `.info.yml` | [libraries-assets.md](libraries-assets.md) |
+| Charger CSS/JS conditionnellement en Twig | `{{ attach_library('mon_theme/lib') }}` | [libraries-assets.md](libraries-assets.md) |
+| Charger CSS/JS depuis PHP (preprocess) | `$variables['#attached']['library'][]` | [libraries-assets.md](libraries-assets.md) |
+| Remplacer une librairie core/contrib | `libraries-override:` dans `.info.yml` | [libraries-assets.md](libraries-assets.md) |
+| Étendre une librairie existante | `libraries-extend:` dans `.info.yml` | [libraries-assets.md](libraries-assets.md) |
+| Passer des données PHP → JavaScript | `drupalSettings` | [libraries-assets.md](libraries-assets.md) |
+| JS sans jQuery (D9+) | `core/once` + vanilla JS | [libraries-assets.md](libraries-assets.md) |
+| Savoir quel template modifier | Twig Debug — commentaires HTML | [theme-suggestions.md](theme-suggestions.md) |
+| Surcharger le template d'un nœud | `node--TYPE--VIEW-MODE.html.twig` | [theme-suggestions.md](theme-suggestions.md) |
+| Ajouter une suggestion conditionnelle | `hook_theme_suggestions_HOOK_alter()` | [theme-suggestions.md](theme-suggestions.md) |
+| Exclure un champ du rendu | `{{ content\|without('field_image') }}` | [twig-templates.md](twig-templates.md) |
+| Ajouter une classe CSS dynamique | `{{ attributes.addClass('ma-classe') }}` | [twig-templates.md](twig-templates.md) |
+| Filtres Drupal (|t, |render, |clean_class…) | Référence filtres Twig | [twig-templates.md](twig-templates.md) |
+| Préparer des variables avant Twig | `hook_preprocess_HOOK` dans `.theme` | [preprocess.md](preprocess.md) |
+| Classes CSS dynamiques selon contexte | Preprocess + `$variables['attributes']` | [preprocess.md](preprocess.md) |
+| Images responsive multi-breakpoint | `breakpoints.yml` + Responsive Image Styles | [responsive-images.md](responsive-images.md) |
+| WebP automatique | Image Styles D10+ | [responsive-images.md](responsive-images.md) |
+| Supprimer CSS core/contrib | `stylesheets-remove:` / `hook_css_alter` | [libraries-assets.md](libraries-assets.md) |
+| Modifier librairies d'autres modules | `hook_library_info_alter` | [preprocess.md](preprocess.md) |
+| Ajouter meta tags / preconnect | `hook_page_attachments_alter` | [preprocess.md](preprocess.md) |
+| Créer un composant réutilisable (D10.3+) | Single Directory Components | [theme-anatomy.md](theme-anatomy.md) |
+
+## Anti-Patterns Critiques
+
+| ❌ À ne jamais faire | ✅ Bonne pratique | Raison |
+|---------------------|------------------|--------|
+| `class="{{ attributes.class }} ma-classe"` | `{{ attributes.addClass('ma-classe') }}` | Écrase les classes Drupal système |
+| `core/jquery` en dépendance par défaut | `core/once` + vanilla JS | jQuery n'est plus chargé par défaut D9+ |
+| `jQuery(document).ready(function() {})` | `(function(Drupal, once) { Drupal.behaviors.X = {...} })(Drupal, once)` | Pattern Drupal behaviors obligatoire |
+| Logique complexe dans les templates Twig | Déplacer dans `preprocess_HOOK` | Twig doit rester déclaratif |
+| `base theme: classy` en D10+ | `base theme: stable9` ou `base theme: false` | `classy` supprimé en D10 |
+| `{{ node.field_image.value }}` | `{{ content.field_image }}` ou `{{ node.field_image.entity.uri.value }}` | `content` applique le formatter, `node` donne le raw |
+| `!important` dans CSS | Comprendre la cascade, utiliser les niveaux CSS | Indique une mauvaise architecture CSS |
+| Charger toutes les librairies globalement | Attacher conditionnellement | Perfs — Drupal charge à la demande |
+| `$variables['theme_hook_suggestions'][]` | `hook_theme_suggestions_HOOK_alter()` | Ancienne API, toujours fonctionnelle mais déconseillée |
+
+## Évolution par Version Majeure
+
+| Feature | D8 | D9 | D10 | D11 |
+|---------|----|----|-----|-----|
+| jQuery chargé par défaut | ✅ | ⚠️ opt-in | ❌ | ❌ |
+| Base theme `classy` | ✅ | ✅ | ❌ supprimé | ❌ |
+| Base theme `stable9` | ❌ | ✅ | ✅ recommandé | ✅ |
+| Base theme `olivero` (front) | ❌ | ❌ | ✅ stable | ✅ |
+| Base theme `claro` (admin) | ❌ | ✅ stable | ✅ | ✅ |
+| `core/once` (remplace jQuery once) | ❌ | ✅ | ✅ standard | ✅ |
+| WebP natif (Image Styles) | ❌ | ❌ | ✅ | ✅ |
+| Single Directory Components (SDC) | ❌ | ❌ | ✅ expérimental | ✅ stable |
+| `{% trans %}` / `{% plural %}` Twig | ✅ | ✅ | ✅ | ✅ |
+
+## Auto-Amélioration
+
+- **[lessons.md](lessons.md)** — Bugs trouvés en usage réel. Ajouter une entrée après chaque correction.
+- **[CHANGELOG.md](CHANGELOG.md)** — Historique des versions (v1.0 courante).
+
+## See Also
+
+- `drupal-core` — hooks, services, rendering system côté module
+- `drupal-config` — Config Management (config/install du thème)
+- `drupal-security` — échappement XSS dans Twig, `#markup` vs `#plain_text`
+- `drupal-tooling` — DDEV, Drush, déploiement
