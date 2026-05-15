@@ -312,5 +312,5 @@ npm run watch
 
 # Production
 npm run build
-ddev drush cr   # Pour que Drupal prenne en compte les nouveaux fichiers
+docker compose exec php drush cr   # Pour que Drupal prenne en compte les nouveaux fichiers
 ```

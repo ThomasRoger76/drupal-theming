@@ -242,7 +242,7 @@ Le crop est appliqué automatiquement lors de la génération de l'Image Style.
 
 ```bash
 composer require drupal/focal_point
-ddev drush en focal_point -y
+docker compose exec php drush en focal_point -y
 ```
 
 Dans l'Image Style : ajouter l'effet **"Focal Point Scale and Crop"** à la place de "Scale and Crop" standard.
@@ -256,12 +256,12 @@ Dans le widget de champ image : activer "Focal Point" — une croix repositionna
 Le module `responsive_image` (core) utilise les groupes de breakpoints définis dans `.breakpoints.yml`.
 
 ```bash
-ddev drush en responsive_image -y   # Généralement déjà activé sur les sites front-end
+docker compose exec php drush en responsive_image -y   # Généralement déjà activé sur les sites front-end
 ```
 
 Vérifier que le groupe `mon_theme` est disponible dans `/admin/config/media/responsive-image`.
 
 Si les breakpoints ne s'affichent pas après modification du `.breakpoints.yml` :
 ```bash
-ddev drush cr   # Vider le cache — les breakpoints sont mis en cache
+docker compose exec php drush cr   # Vider le cache — les breakpoints sont mis en cache
 ```

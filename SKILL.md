@@ -37,6 +37,20 @@ Référentiel complet du theming Drupal 8-11+ : anatomie d'un thème, gestion de
 | Modifier librairies d'autres modules | `hook_library_info_alter` | [preprocess.md](preprocess.md) |
 | Ajouter meta tags / preconnect | `hook_page_attachments_alter` | [preprocess.md](preprocess.md) |
 | Créer un composant réutilisable (D10.3+) | Single Directory Components | [theme-anatomy.md](theme-anatomy.md) |
+| Utiliser Bootstrap 5 comme base | `drupal/bootstrap5` + sous-thème custom | [bootstrap5.md](bootstrap5.md) |
+| Créer un sous-thème Bootstrap 5 | `.info.yml` avec `base theme: bootstrap5` | [bootstrap5.md](bootstrap5.md) |
+| Surcharger des templates Bootstrap5 | Copier dans `templates/` du sous-thème | [bootstrap5.md](bootstrap5.md) |
+| Compiler SCSS → CSS pour un thème | Gulp, Webpack ou Vite + npm scripts | [build-pipeline.md](build-pipeline.md) |
+| Service Docker Node.js pour le thème | `node:22-alpine` + `npm run watch` | [build-pipeline.md](build-pipeline.md) |
+| Twig 3 arrow functions (\|map, \|filter, \|reduce) | Arrow functions `u => u.name` | [twig3-accessibility.md](twig3-accessibility.md) |
+| Navigation accessible avec ARIA | `aria-current`, `aria-expanded` | [twig3-accessibility.md](twig3-accessibility.md) |
+| Images avec alt WCAG | `alt=""` décoratif, alt descriptif | [twig3-accessibility.md](twig3-accessibility.md) |
+| Template email HTML (Symfony Mailer) | CSS inline, structure HTML email | [email-templates.md](email-templates.md) |
+| apply block Twig 3 | `{% apply upper %}{% endapply %}` | [twig3-accessibility.md](twig3-accessibility.md) |
+| Nommer les classes CSS selon BEM | `.block__element--modifier` dans Twig | [bem-storybook.md](bem-storybook.md) |
+| Documenter et tester les composants visuellement | Storybook + HTML stories | [bem-storybook.md](bem-storybook.md) |
+| Service Docker pour Storybook | `node:22-alpine` port 6006 | [bem-storybook.md](bem-storybook.md) |
+| État CSS via BEM modifier | `.card--active` vs `.is-active` | [bem-storybook.md](bem-storybook.md) |
 
 ## Anti-Patterns Critiques
 
@@ -76,4 +90,6 @@ Référentiel complet du theming Drupal 8-11+ : anatomie d'un thème, gestion de
 - `drupal-core` — hooks, services, rendering system côté module
 - `drupal-config` — Config Management (config/install du thème)
 - `drupal-security` — échappement XSS dans Twig, `#markup` vs `#plain_text`
-- `drupal-tooling` — DDEV, Drush, déploiement
+- `drush` — `drush cr`, `drush twig:debug`, cache rebuild
+- `drupal-docker` — Service Node.js Docker Compose pour le build pipeline
+- `drupal-core` — TrustedCallbackInterface pour les callbacks `#pre_render` dans les thèmes → voir `drupal-security/xss-prevention.md`

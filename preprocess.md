@@ -292,4 +292,50 @@ function mon_theme_css_alter(array &$css, \Drupal\Core\Asset\AttachedAssetsInter
 | **Exemple** | Charger des entités, construire la structure | Ajouter des classes CSS, formatter des dates |
 | **DI** | Via constructeur | `\Drupal::service()` acceptable |
 
+---
+
+## ⚠️ Piège Critique — Preprocess sans Cache Tags = Production Cassée
+
+C'est l'erreur numéro 1 en production Drupal. Un preprocess qui charge des données dynamiques sans déclarer les cache tags appropriés servira du contenu périmé à tous les utilisateurs.
+
+```php
+// ❌ DÉSASTRE EN PRODUCTION — données chargées une fois, servies périmées indéfiniment
+function mon_theme_preprocess_node(array &$variables): void {
+  $node = $variables['node'];
+  // Requête DB — résultat mis en cache mais JAMAIS invalidé
+  $ids = \Drupal::entityQuery('node')
+    ->condition('field_category', $node->field_category->target_id)
+    ->accessCheck(TRUE)
+    ->range(0, 3)
+    ->execute();
+  $variables['related'] = Node::loadMultiple($ids);
+  // ZÉRO cache tag → si un nœud related est modifié, la page reste périmée
+}
+
+// ✅ CORRECT — cache invalidé automatiquement quand n'importe quel nœud related change
+function mon_theme_preprocess_node(array &$variables): void {
+  $node = $variables['node'];
+  $ids = \Drupal::entityQuery('node')
+    ->condition('field_category', $node->field_category->target_id)
+    ->accessCheck(TRUE)
+    ->range(0, 3)
+    ->execute();
+  $related = Node::loadMultiple($ids);
+  $variables['related'] = $related;
+
+  // Propager les cache tags OBLIGATOIREMENT
+  $variables['#cache']['tags'] = array_merge(
+    $variables['#cache']['tags'] ?? [],
+    ['node_list'],                                          // Invalider si n'importe quel node change
+    array_map(fn($n) => 'node:' . $n->id(), $related),    // Invalider si ce node précis change
+    $node->getCacheTags(),                                  // Tags du node courant
+  );
+  // Cache context : si le résultat dépend de l'utilisateur connecté
+  $variables['#cache']['contexts'][] = 'user.permissions';
+}
+```
+
+**Règle d'or :** pour chaque entité chargée dans un preprocess, propager ses cache tags via `$variables['#cache']['tags']`. Drupal les remonte automatiquement dans le render array final.
+
+**Voir aussi :** `drupal-core/services-internal-api.md` — section Cache API complète (tags, contexts, max-age).
 **Règle :** si tu peux faire la chose en preprocess sans charger de données lourdes → preprocess. Si tu construis une structure de données complexe → `build()` dans le plugin/controller.

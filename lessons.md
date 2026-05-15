@@ -76,7 +76,7 @@ Pas encore de bugs en usage réel. Les points suivants sont des pièges connus d
 ### `base theme: bootstrap5` — module contrib requis, jQuery activé
 - **Symptôme :** Thème ne démarre pas avec "Base theme bootstrap5 not found"
 - **Cause :** `bootstrap5` est un base theme contrib, pas un core theme — nécessite `composer require drupal/bootstrap5`
-- **Correct :** `composer require drupal/bootstrap5 && ddev drush en bootstrap5 -y`
+- **Correct :** `composer require drupal/bootstrap5 && docker compose exec php drush en bootstrap5 -y`
 - **Prévention :** Si `base theme: bootstrap5`, jQuery est activé par défaut — ajouter `core/jquery` dans les librairies est acceptable mais non obligatoire
 
 ### `core/drupal.once` — Alias invalide dans `.libraries.yml`
@@ -94,5 +94,5 @@ Pas encore de bugs en usage réel. Les points suivants sont des pièges connus d
 ### `drush cr` insuffisant après modification du `.theme`
 - **Symptôme :** Les changements de preprocess ne prennent pas effet
 - **Cause :** Le cache Twig ET le cache des fonctions PHP sont indépendants — parfois `drush cr` ne suffit pas
-- **Correct :** `ddev drush cr` puis si nécessaire `ddev drush php:eval "\Drupal::cache('render')->deleteAll();"` ou redémarrer le serveur
+- **Correct :** `docker compose exec php drush cr` puis si nécessaire `docker compose exec php drush php:eval "\Drupal::cache('render')->deleteAll();"` ou redémarrer le serveur
 - **Prévention :** En dev, activer `auto_reload: true` et `cache: false` dans `services.yml`

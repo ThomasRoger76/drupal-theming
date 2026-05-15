@@ -12,7 +12,7 @@ parameters:
 ```
 
 ```bash
-ddev drush cr   # Obligatoire après modification
+docker compose exec php drush cr   # Obligatoire après modification
 ```
 
 ---

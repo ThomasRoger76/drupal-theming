@@ -16,7 +16,7 @@
 - `block--REGION.html.twig` — note ⚠️ ajoutée (non automatique, requiert hook)
 - `paragraph--TEXT.html.twig` → `paragraph--text.html.twig` (machine name en minuscules)
 - `preprocess: false` commentaire → explication précise (agrégation Drupal, pas SCSS)
-- `ddev drush cache:rebuild && ddev drush cr` → `ddev drush cr` (doublon)
+- `docker compose exec php drush cache:rebuild && docker compose exec php drush cr` → `docker compose exec php drush cr` (doublon)
 - `$entity` dead code dans preprocess_field → utilisé (`getEntityTypeId()`)
 - `@classy/css/...` dans stylesheets-remove → exemple neutre sans module supprimé D10
 - Underscores vs tirets explication → ajoutée directement dans theme-suggestions.md

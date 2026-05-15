@@ -135,8 +135,8 @@ hidden: false
 
 ```bash
 # Activer le thème
-ddev drush config:set system.theme default mon_theme -y
-ddev drush cr
+docker compose exec php drush config:set system.theme default mon_theme -y
+docker compose exec php drush cr
 
 # Activer Twig Debug (jamais en production)
 # Copier le fichier services si pas encore fait
@@ -153,7 +153,7 @@ parameters:
 ```
 
 ```bash
-ddev drush cr   # OBLIGATOIRE après modification de services.yml
+docker compose exec php drush cr   # OBLIGATOIRE après modification de services.yml
 ```
 
 **Désactiver l'agrégation CSS/JS** (dev uniquement) :
@@ -166,13 +166,13 @@ ddev drush cr   # OBLIGATOIRE après modification de services.yml
 # 2. Pour CSS/JS : rafraîchir le navigateur (si agrégation désactivée)
 # 3. Pour templates Twig : drush cr ou auto_reload si activé
 # 4. Pour preprocess/.theme : TOUJOURS drush cr
-ddev drush cr
+docker compose exec php drush cr
 
 # Débugger les templates actifs (cr = alias cache:rebuild, un seul suffit)
-ddev drush cr
+docker compose exec php drush cr
 
 # Voir les erreurs PHP du thème
-ddev drush watchdog:tail --type=php
+docker compose exec php drush watchdog:tail --type=php
 ```
 
 ---
@@ -191,35 +191,172 @@ ddev drush watchdog:tail --type=php
 
 ---
 
-## Single Directory Components (SDC) — D10.3+ / D11
+## Single Directory Components (SDC) — D10.3+ / D11 ★ STANDARD D11
 
-Les SDC regroupent template, CSS, JS et schéma dans un dossier par composant :
+Les SDC sont **le système de composants officiel de Drupal 11** — ils remplacent le pattern preprocess+twig fragmenté par un composant auto-contenu (template + CSS + JS + schéma).
+
+### Structure complète d'un SDC
 
 ```
 mon_theme/components/
   card/
-    card.component.yml   # Schéma des props
-    card.html.twig
-    card.css
-    card.js
+    card.component.yml   # Schéma des props (OBLIGATOIRE)
+    card.html.twig       # Template du composant
+    card.css             # CSS scopé au composant
+    card.js              # JS comportement Drupal
+  hero/
+    hero.component.yml
+    hero.html.twig
+    hero.css
+  button/
+    button.component.yml
+    button.html.twig
+    button.css
 ```
 
+### `card.component.yml` — Schéma complet des props
+
 ```yaml
-# card.component.yml
 $schema: 'https://git.drupalcode.org/project/drupal/-/raw/HEAD/core/assets/schemas/v1/metadata.schema.json'
 name: Card
+description: Carte article avec image, titre et description.
 props:
   type: object
+  required:
+    - title
   properties:
     title:
       type: string
+      title: Titre
+    body:
+      type: string
+      title: Corps de texte
+      nullable: true
     image_url:
       type: string
+      title: URL de l'image
+      nullable: true
+    url:
+      type: string
+      title: Lien de la carte
+      nullable: true
+    variant:
+      type: string
+      title: Variante visuelle
+      enum: [default, featured, compact]
+      default: default
+slots:
+  footer:
+    title: Contenu du pied de carte (optionnel)
 ```
+
+### `card.html.twig` — Template du composant
 
 ```twig
-{# Utiliser un SDC dans un template Drupal #}
-{% component 'mon_theme:card' with { title: node.label, image_url: image_url } %}
+{#
+  @prop title: string
+  @prop body: string|null
+  @prop image_url: string|null
+  @prop url: string|null
+  @prop variant: string
+  @slot footer
+#}
+<article class="card card--{{ variant }}">
+  {% if image_url %}
+    <img src="{{ image_url }}" alt="{{ title }}" loading="lazy">
+  {% endif %}
+
+  <div class="card__content">
+    {% if url %}
+      <h2 class="card__title"><a href="{{ url }}">{{ title }}</a></h2>
+    {% else %}
+      <h2 class="card__title">{{ title }}</h2>
+    {% endif %}
+
+    {% if body %}
+      <div class="card__body">{{ body }}</div>
+    {% endif %}
+  </div>
+
+  {% if footer is defined %}
+    <footer class="card__footer">{{ footer }}</footer>
+  {% endif %}
+</article>
 ```
 
-Activer : `ddev drush en sdc -y` (module core en D10.3+, stable D11)
+### Utiliser un SDC dans un template parent
+
+```twig
+{# Dans node--article--teaser.html.twig #}
+{% component 'mon_theme:card' with {
+  title: node.label,
+  body: content.body|render|striptags|trim|slice(0, 150),
+  image_url: content.field_image|render,
+  url: url,
+  variant: 'default'
+} %}
+
+{# Avec un slot nommé #}
+{% component 'mon_theme:card' with { title: node.label } %}
+  {% fill footer %}
+    <time>{{ node.created.value|date('d/m/Y') }}</time>
+  {% endfill %}
+{% endcomponent %}
+
+{# Composer des SDC imbriqués #}
+{% component 'mon_theme:hero' with { title: page_title } %}
+  {% fill content %}
+    {% component 'mon_theme:button' with { label: 'Voir plus', url: url } %}{% endcomponent %}
+  {% endfill %}
+{% endcomponent %}
+```
+
+### Utiliser un SDC depuis un preprocess PHP
+
+```php
+// Dans mon_theme.theme — attacher un SDC via render array
+function mon_theme_preprocess_node(array &$variables): void {
+  $node = $variables['node'];
+  // Construire un render array avec le composant SDC
+  $variables['card_component'] = [
+    '#type' => 'component',
+    '#component' => 'mon_theme:card',
+    '#props' => [
+      'title' => $node->label(),
+      'url' => $node->toUrl()->toString(),
+      'variant' => 'featured',
+    ],
+  ];
+}
+```
+
+### Activer les SDC
+
+```bash
+# D10.3+ : le module SDC est dans core mais pas actif par défaut
+docker compose exec php drush en sdc -y
+
+# D11 : stable et activé par défaut dans les nouveaux sites
+docker compose exec php drush cr
+```
+
+### Debugging SDC
+
+```bash
+# Afficher les erreurs de validation des props
+docker compose exec php drush cr && docker compose exec php drush watchdog:show --type=sdc
+
+# Lister les composants disponibles
+docker compose exec php drush php:eval "print_r(\Drupal::service('plugin.manager.sdc')->getDefinitions());"
+```
+
+### Anti-patterns SDC
+
+| ❌ | ✅ | Raison |
+|----|----|----|
+| Logique PHP complexe dans le `.twig` du SDC | Preprocess + `#props` depuis PHP | SDC = présentation pure |
+| Props non typées dans `.component.yml` | Toujours déclarer `type:` + `required:` | Validation au rendu |
+| SDC sans slot pour le contenu variable | Utiliser `slots:` pour le contenu dynamique | Composabilité |
+| Un seul gros composant `page` | Décomposer : `header`, `card`, `button` | Réutilisabilité |
+
+Activer : `docker compose exec php drush en sdc -y` (module core en D10.3+, stable et recommandé D11)
