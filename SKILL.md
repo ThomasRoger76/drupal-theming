@@ -48,6 +48,10 @@ Référentiel complet du theming Drupal 8-11+ : anatomie d'un thème, gestion de
 | Template email HTML (Symfony Mailer) | CSS inline, structure HTML email | [email-templates.md](email-templates.md) |
 | apply block Twig 3 | `{% apply upper %}{% endapply %}` | [twig3-accessibility.md](twig3-accessibility.md) |
 | Nommer les classes CSS selon BEM | `.block__element--modifier` dans Twig | [bem-storybook.md](bem-storybook.md) |
+| CSS responsive selon le conteneur (pas la viewport) | CSS Container Queries | [css-moderne.md](css-moderne.md) |
+| Dark mode auto (prefers-color-scheme) | CSS Variables + @media dark | [css-moderne.md](css-moderne.md) |
+| CSS adapté RTL/LTR automatiquement | CSS Logical Properties | [css-moderne.md](css-moderne.md) |
+| Organiser CSS avec priorités explicites | CSS Cascade Layers @layer | [css-moderne.md](css-moderne.md) |
 | Documenter et tester les composants visuellement | Storybook + HTML stories | [bem-storybook.md](bem-storybook.md) |
 | Service Docker pour Storybook | `node:22-alpine` port 6006 | [bem-storybook.md](bem-storybook.md) |
 | État CSS via BEM modifier | `.card--active` vs `.is-active` | [bem-storybook.md](bem-storybook.md) |
