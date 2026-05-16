@@ -97,7 +97,7 @@ Référentiel complet du theming Drupal 8-11+ : anatomie d'un thème, gestion de
 - `drupal-core` — hooks, services, rendering system côté module, TrustedCallbackInterface pour les callbacks `#pre_render`
 - `drupal-config` — Config Management (config/install du thème)
 - `drupal-security` — échappement XSS dans Twig, `#markup` vs `#plain_text`
-- `drupal-tooling` — `drush cr`, `drush twig:debug`, cache rebuild
+- `drupal-deployment` — `drush cr`, `drush twig:debug`, cache rebuild
 - `drupal-docker` — Service Node.js Docker Compose pour le build pipeline
 - `drupal-performance` — agrégation CSS/JS, WebP, Core Web Vitals, lazy loading images
 - `drupal-content-modeling` — templates Paragraphs, Layout Builder, nodes
