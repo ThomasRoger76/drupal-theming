@@ -2,6 +2,24 @@
 
 ---
 
+## v1.2 — 2026-05-16
+
+**Nouvel agent :**
+- `agents/theme-generator.md` — génère un thème Drupal 11 complet from scratch (`.info.yml`, libraries, preprocess, regions, SDC, build pipeline Vite). Supporte `--type=standalone|bootstrap5|sdc`. Inclut les règles de génération strictes et la vérification post-génération.
+
+**build-pipeline.md :**
+- Nouvelle section "Pipeline Vite" (recommandé pour nouveaux projets 2025+) — `vite.config.js` complet avec SCSS natif, ESM, output fixe pour `.libraries.yml`, sourcemaps, minification esbuild
+- Comparatif Gulp / Webpack 5 / Vite 5 avec recommandations 2025
+
+**SKILL.md :**
+- Description frontmatter étendue : Bootstrap5, SDC, CSS Container Queries, BEM/Storybook, Vite, dark mode, ARIA/WCAG, Symfony Mailer email templates
+- Quick Decision Table : entrées `theme-generator`, `Vite (recommandé)`, Gulp/Webpack (legacy), `twig_field_value`
+
+**lessons.md :**
+- Leçon `drush cr insuffisant` : suppression de la mention `deleteAll()` sur render cache (risqué en prod) — remplacée par redémarrage container ou Twig debug
+
+---
+
 ## v1.1 — 2026-05-14
 
 **Bugs corrigés :**

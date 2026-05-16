@@ -26,6 +26,7 @@ Référentiel complet du theming Drupal 8-11+ : anatomie d'un thème, gestion de
 | Savoir quel template modifier | Twig Debug — commentaires HTML | [theme-suggestions.md](theme-suggestions.md) |
 | Surcharger le template d'un nœud | `node--TYPE--VIEW-MODE.html.twig` | [theme-suggestions.md](theme-suggestions.md) |
 | Ajouter une suggestion conditionnelle | `hook_theme_suggestions_HOOK_alter()` | [theme-suggestions.md](theme-suggestions.md) |
+| Accéder proprement aux valeurs de champs en Twig | Module `twig_field_value` — `field.value`, `field.0.value` | [twig-templates.md](twig-templates.md) |
 | Exclure un champ du rendu | `{{ content\|without('field_image') }}` | [twig-templates.md](twig-templates.md) |
 | Ajouter une classe CSS dynamique | `{{ attributes.addClass('ma-classe') }}` | [twig-templates.md](twig-templates.md) |
 | Filtres Drupal (|t, |render, |clean_class…) | Référence filtres Twig | [twig-templates.md](twig-templates.md) |
