@@ -1,6 +1,6 @@
 ---
 name: drupal-theming
-description: Use when creating or customizing Drupal themes, writing Twig templates, implementing preprocess hooks in .theme files, declaring CSS/JS libraries (.libraries.yml), configuring responsive images with breakpoints.yml, debugging template suggestions via Twig debug, or overriding base themes in Drupal 8-11+
+description: Use when creating or customizing Drupal themes, writing Twig templates, implementing preprocess hooks in .theme files, declaring CSS/JS libraries (.libraries.yml), configuring responsive images with breakpoints.yml, debugging template suggestions via Twig debug, overriding base themes, building with Bootstrap5 sub-theme, compiling SCSS with Gulp/Webpack/Vite, implementing BEM methodology with Storybook component documentation, using CSS Container Queries or Cascade Layers, creating Single Directory Components (SDC), implementing dark mode with CSS variables, building accessible themes (ARIA, WCAG), or templating emails with Symfony Mailer in Drupal 8-11+
 ---
 
 # Drupal Theming — Architecture & Référence Complète
@@ -40,7 +40,9 @@ Référentiel complet du theming Drupal 8-11+ : anatomie d'un thème, gestion de
 | Utiliser Bootstrap 5 comme base | `drupal/bootstrap5` + sous-thème custom | [bootstrap5.md](bootstrap5.md) |
 | Créer un sous-thème Bootstrap 5 | `.info.yml` avec `base theme: bootstrap5` | [bootstrap5.md](bootstrap5.md) |
 | Surcharger des templates Bootstrap5 | Copier dans `templates/` du sous-thème | [bootstrap5.md](bootstrap5.md) |
-| Compiler SCSS → CSS pour un thème | Gulp, Webpack ou Vite + npm scripts | [build-pipeline.md](build-pipeline.md) |
+| Générer un thème Drupal 11 complet from scratch | Agent `/drupal-generate-theme` | [agents/theme-generator.md](agents/theme-generator.md) |
+| Compiler SCSS → CSS (nouveaux projets) | **Vite** (recommandé 2025+) | [build-pipeline.md](build-pipeline.md) |
+| Compiler SCSS → CSS (projets legacy) | Gulp ou Webpack | [build-pipeline.md](build-pipeline.md) |
 | Service Docker Node.js pour le thème | `node:22-alpine` + `npm run watch` | [build-pipeline.md](build-pipeline.md) |
 | Twig 3 arrow functions (\|map, \|filter, \|reduce) | Arrow functions `u => u.name` | [twig3-accessibility.md](twig3-accessibility.md) |
 | Navigation accessible avec ARIA | `aria-current`, `aria-expanded` | [twig3-accessibility.md](twig3-accessibility.md) |

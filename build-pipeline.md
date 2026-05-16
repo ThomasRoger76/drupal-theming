@@ -576,6 +576,114 @@ map-styles:
 
 ---
 
+## Pipeline Vite — Recommandé pour les Nouveaux Projets (2025+)
+
+Vite est devenu le bundler de référence : démarrage instantané en dev (ESM natif), build de production ultra-rapide via Rollup. Recommandé pour tout nouveau thème.
+
+### `package.json` (variante Vite)
+
+```json
+{
+  "name": "montheme",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "vite build --watch",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^5.2.0",
+    "sass": "^1.75.0",
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.38"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.3"
+  }
+}
+```
+
+### `vite.config.js`
+
+```javascript
+import { defineConfig } from 'vite';
+import { resolve } from 'path';
+
+export default defineConfig({
+  // Pas de server dev (Drupal gère le serving)
+  build: {
+    outDir: 'dist',
+    emptyOutDir: true,
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, 'src/js/main.js'),  // JS + SCSS importé ici
+      },
+      output: {
+        // Noms de fichiers fixes pour .libraries.yml
+        entryFileNames: 'js/[name].bundle.js',
+        chunkFileNames: 'js/[name].chunk.js',
+        assetFileNames: (assetInfo) => {
+          if (/\.css$/.test(assetInfo.name)) {
+            return 'css/[name][extname]';
+          }
+          return 'assets/[name][extname]';
+        },
+      },
+    },
+    sourcemap: process.env.NODE_ENV !== 'production',
+    minify: process.env.NODE_ENV === 'production' ? 'esbuild' : false,
+  },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        includePaths: ['node_modules'],  // Accès à Bootstrap SCSS
+      },
+    },
+    postcss: {
+      plugins: [
+        (await import('autoprefixer')).default(),
+      ],
+    },
+  },
+});
+```
+
+### `src/js/main.js` — Point d'entrée
+
+```javascript
+// Importer Bootstrap SCSS + styles custom
+import '../scss/main.scss';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';  // Bootstrap JS (optionnel)
+
+// Drupal behaviors ES6 — Vite bundlera correctement
+(function (Drupal, once) {
+  'use strict';
+
+  Drupal.behaviors.montheme = {
+    attach(context, settings) {
+      once('montheme-init', '[data-montheme]', context).forEach((el) => {
+        // Logique custom
+      });
+    },
+  };
+})(Drupal, once);
+```
+
+### Comparatif Gulp vs Webpack vs Vite
+
+| | Gulp | Webpack 5 | Vite 5 |
+|---|---|---|--------|
+| Vitesse dev (watch) | Lente (rebuild complet) | Lente (HMR) | **Instantanée** (ESM natif) |
+| Config | Verbose (code JS) | Très verbose | **Minimale** |
+| Build prod | OK | OK | **Très rapide** (esbuild) |
+| Adoption 2025 | En déclin | Stable | **En forte croissance** |
+| SCSS | Via plugins | Via loaders | **Natif** (plugin sass) |
+| Recommandation | Projets legacy | Projets complexes | **Nouveaux projets** |
+
+> **Migration depuis Webpack :** remplacer `webpack.config.js` par `vite.config.js`, adapter les points d'entrée, supprimer les loaders Webpack. La configuration Vite est ~5× plus courte.
+
+---
+
 ## Troubleshooting Build Pipeline
 
 | Problème | Cause probable | Solution |

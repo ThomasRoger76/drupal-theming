@@ -94,5 +94,6 @@ Pas encore de bugs en usage réel. Les points suivants sont des pièges connus d
 ### `drush cr` insuffisant après modification du `.theme`
 - **Symptôme :** Les changements de preprocess ne prennent pas effet
 - **Cause :** Le cache Twig ET le cache des fonctions PHP sont indépendants — parfois `drush cr` ne suffit pas
-- **Correct :** `docker compose exec php drush cr` puis si nécessaire `docker compose exec php drush php:eval "\Drupal::cache('render')->deleteAll();"` ou redémarrer le serveur
-- **Prévention :** En dev, activer `auto_reload: true` et `cache: false` dans `services.yml`
+- **Correct :** `docker compose exec php drush cr` puis si nécessaire redémarrer le container PHP ou activer Twig debug
+- **⚠️ Ne jamais utiliser en production :** `deleteAll()` sur le cache render efface le cache de tous les utilisateurs simultanément — réservé au dev uniquement
+- **Prévention :** En dev, activer `auto_reload: true` et `cache: false` dans `services.yml` — le cache Twig se recharge automatiquement
