@@ -9,6 +9,8 @@ description: Use when creating or customizing Drupal themes, writing Twig templa
 
 Référentiel complet du theming Drupal 8-11+ : anatomie d'un thème, gestion des assets, moteur Twig, suggestions de templates, preprocess PHP, images responsives. Absorbe `drupal-frontend`.
 
+> **Pattern dominant agences françaises :** Bootstrap 5 via `drupal/bootstrap5` avec sous-thème custom (80%+ des projets). Le fichier [bootstrap5.md](bootstrap5.md) couvre la création complète d'un sous-thème Bootstrap 5 avec SCSS, templates Twig Bootstrap, menus responsive, carrousels Paragraphs, et formulaires avec classes BS5.
+
 ## Quick Decision Table
 
 | Besoin | Outil | Référence |
