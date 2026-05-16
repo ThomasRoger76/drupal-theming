@@ -100,4 +100,6 @@ Référentiel complet du theming Drupal 8-11+ : anatomie d'un thème, gestion de
 - `drupal-deployment` — `drush cr`, `drush twig:debug`, cache rebuild
 - `drupal-docker` — Service Node.js Docker Compose pour le build pipeline
 - `drupal-performance` — agrégation CSS/JS, WebP, Core Web Vitals, lazy loading images
-- `drupal-content-modeling` — templates Paragraphs, Layout Builder, nodes
+- `drupal-content-modeling` — templates Paragraphs, Layout Builder, nodes, Block Content types
+- `drupal-sdc` — Single Directory Components, Storybook, props et slots
+- `drupal-gin` — Admin theme Gin pour personnaliser l'interface d'administration
