@@ -58,6 +58,10 @@ Référentiel complet du theming Drupal 8-11+ : anatomie d'un thème, gestion de
 | Documenter et tester les composants visuellement | Storybook + HTML stories | [bem-storybook.md](bem-storybook.md) |
 | Service Docker pour Storybook | `node:22-alpine` port 6006 | [bem-storybook.md](bem-storybook.md) |
 | État CSS via BEM modifier | `.card--active` vs `.is-active` | [bem-storybook.md](bem-storybook.md) |
+| Accessibilité WCAG 2.1 AA (ARIA, keyboard, contrast) | alt text obligatoire, focus visible, landmarks | [accessibility.md](accessibility.md) |
+| Screen reader — contenu visible uniquement | `.visually-hidden` + `aria-live` pour les annonces | [accessibility.md](accessibility.md) |
+| Tester l'accessibilité automatiquement | axe-core, Lighthouse, editoria11y module | [accessibility.md](accessibility.md) |
+| Skip link — navigation clavier rapide | Premier élément de page = `<a href="#main-content">` | [accessibility.md](accessibility.md) |
 
 ## Anti-Patterns Critiques
 
